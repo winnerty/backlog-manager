@@ -19,10 +19,31 @@ def save_tickets(tickets: list[Ticket]) -> None:
 
 def update_ticket(ticket_id: int, updated_data: dict) -> Ticket:
     tickets = load_tickets()
+    
     for i, ticket in enumerate(tickets):
         if ticket.id == ticket_id:
             updated_ticket = ticket.model_copy(update=updated_data)
             tickets[i] = updated_ticket
             save_tickets(tickets)
             return updated_ticket
+            
     raise ValueError(f"Ticket {ticket_id} not found")
+
+def create_ticket(title: str, type: str) -> Ticket:
+    tickets = load_tickets()
+    
+    max_id = max([t.id for t in tickets], default=1000)
+    new_id = max_id + 1
+    
+    new_ticket = Ticket(
+        id=new_id,
+        title=title,
+        type=type,
+        status="open",
+        severity="medium",
+        assignee=None
+    )
+    
+    tickets.append(new_ticket)
+    save_tickets(tickets)
+    return new_ticket
