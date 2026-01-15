@@ -1,17 +1,29 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .storage import load_tickets
+from .storage import init_storage, load_tickets, update_ticket
 from .models import Ticket
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+def startup():
+    init_storage()
+
 @app.get("/tickets", response_model=list[Ticket])
 def get_tickets():
     return load_tickets()
+
+@app.put("/tickets/{ticket_id}", response_model=Ticket)
+def put_ticket(ticket_id: int, ticket: Ticket):
+    try:
+        return update_ticket(ticket_id, ticket.model_dump())
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))

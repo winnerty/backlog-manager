@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-DATA_FILE = Path("data/tickets.json")
+DATA_FILE = Path(__file__).parent.parent / "data" / "tickets.json"
 
 SEED_TEXT = """
 id: 1001
