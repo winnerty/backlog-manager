@@ -1,53 +1,82 @@
 <template>
-  <div class="container">
-    <h1>Game Backlog Manager</h1>
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-8">🎮 Game Backlog Manager</h1>
 
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
+      <div v-if="loading" class="p-4 text-center bg-yellow-100 text-yellow-800 rounded-lg">Loading...</div>
+      <div v-else-if="error" class="p-4 text-center bg-red-100 text-red-800 rounded-lg">{{ error }}</div>
 
-    <div v-else>
-      <div class="create-form">
-        <h2>Create Ticket</h2>
-        <div class="form-row">
-          <input v-model="newTicket.title" placeholder="Title" />
-          <select v-model="newTicket.type">
-            <option value="">Type</option>
-            <option value="bug">bug</option>
-            <option value="feature">feature</option>
-            <option value="test">test</option>
-          </select>
-          <button @click="createNewTicket" :disabled="createLoading">
-            {{ createLoading ? "..." : "Create" }}
-          </button>
-        </div>
-        <div v-if="createError" class="error-text">{{ createError }}</div>
-      </div>
-
-      <div v-for="t in tickets" :key="t.id" class="ticket">
-        <div class="ticket-header">
-          <strong>{{ t.title }}</strong>
-          <span class="id">#{{ t.id }}</span>
-        </div>
-        <span class="badge">{{ t.type }}</span>
-
-        <div class="fields">
-          <select v-model="t.status" @change="saveTicket(t)">
-            <option>open</option>
-            <option>in_progress</option>
-            <option>testing</option>
-            <option>done</option>
-          </select>
-          <select v-model="t.severity" @change="saveTicket(t)">
-            <option>low</option>
-            <option>medium</option>
-            <option>high</option>
-            <option>critical</option>
-          </select>
-          <input v-model="t.assignee" @change="saveTicket(t)" placeholder="assignee" />
+      <div v-else class="space-y-6">
+        <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">Create Ticket</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+            <input 
+              v-model="newTicket.title" 
+              placeholder="Title" 
+              class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <select 
+              v-model="newTicket.type"
+              class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Type</option>
+              <option value="bug">bug</option>
+              <option value="feature">feature</option>
+              <option value="test">test</option>
+            </select>
+            <button 
+              @click="createNewTicket" 
+              :disabled="createLoading"
+              class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition-colors"
+            >
+              {{ createLoading ? "..." : "Create" }}
+            </button>
+          </div>
+          <div v-if="createError" class="text-sm text-red-600 mt-2">{{ createError }}</div>
         </div>
 
-        <div v-if="t.saving" class="saving">Saving...</div>
-        <div v-if="t.error" class="error-text">{{ t.error }}</div>
+        <div class="space-y-4">
+          <div v-for="t in tickets" :key="t.id" class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start mb-3">
+              <h3 class="text-lg font-semibold text-gray-900">{{ t.title }}</h3>
+              <span class="text-xs text-gray-500 font-mono">#{{ t.id }}</span>
+            </div>
+            
+            <span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium mb-4">{{ t.type }}</span>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+              <select 
+                v-model="t.status" 
+                @change="saveTicket(t)"
+                class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option>open</option>
+                <option>in_progress</option>
+                <option>testing</option>
+                <option>done</option>
+              </select>
+              <select 
+                v-model="t.severity" 
+                @change="saveTicket(t)"
+                class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option>low</option>
+                <option>medium</option>
+                <option>high</option>
+                <option>critical</option>
+              </select>
+              <input 
+                v-model="t.assignee" 
+                @change="saveTicket(t)" 
+                placeholder="assignee" 
+                class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div v-if="t.saving" class="text-xs text-blue-600 font-bold">⏳ Saving...</div>
+            <div v-if="t.error" class="text-xs text-red-600 mt-1">❌ {{ t.error }}</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -125,119 +154,4 @@ async function saveTicket(t) {
   }
 }
 </script>
-
-<style scoped>
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: sans-serif;
-}
-
-h1, h2 {
-  color: #333;
-}
-
-.loading, .error {
-  padding: 15px;
-  text-align: center;
-  background: #fff3cd;
-  border-radius: 4px;
-}
-
-.error {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-.create-form {
-  background: #f5f5f5;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 120px 80px;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-input, select {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: #1976d2;
-}
-
-button {
-  background: #1976d2;
-  color: white;
-  border: none;
-  padding: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-button:hover:not(:disabled) {
-  background: #1565c0;
-}
-
-button:disabled {
-  background: #ccc;
-}
-
-.ticket {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
-  background: #fafafa;
-}
-
-.ticket-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.id {
-  color: #999;
-  font-size: 12px;
-}
-
-.badge {
-  display: inline-block;
-  background: #e3f2fd;
-  color: #1976d2;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  margin-bottom: 10px;
-}
-
-.fields {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.saving {
-  font-size: 12px;
-  color: #1976d2;
-  font-weight: bold;
-}
-
-.error-text {
-  font-size: 12px;
-  color: #d32f2f;
-  margin-top: 5px;
-}
-</style>
+<style></style>
