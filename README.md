@@ -13,7 +13,8 @@ A simple full-stack ticket management app built with **FastAPI** (backend) and *
 ## Tech Stack
 
 - **Backend:** FastAPI, Pydantic, Python 3.13+
-- **Frontend:** Vue 3, Vite
+- **Frontend:** Vue 3, Vite, Tailwind CSS
+- **Styling:** Tailwind CSS, PostCSS, Autoprefixer
 - **Storage:** JSON file
 - **Testing:** pytest
 
@@ -41,7 +42,7 @@ npm install
 npm run dev
 ```
 
-Frontend runs on `http://localhost:5173`
+Frontend runs on `http://localhost:5173` with Tailwind CSS styling
 
 ### 3. Open in Browser
 
